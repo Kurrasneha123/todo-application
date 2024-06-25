@@ -56,35 +56,41 @@ app.get('/todos/', async (request, response) => {
 
   switch (true) {
     case hasPriorityAndStatusProperties(request.query):
+      console.log('hasPriorityAndStatusProperties')
       getTodoQuery = `
        SELECT 
          * 
        FROM 
          todo 
        WHERE 
-         todo LIKE '%${search_q}%'
-         AND status = '${status}'
-         AND priority = '${priority}'`
+        status = '${status}'
+         AND priority '${priority}'
+         AND todo LIKE '%${search_q}%'`
       break
     case hasPriorityProperty(request.query):
+      console.log('hasPriority')
       getTodoQuery = `
       SELECT 
         * 
       FROM 
         todo 
       WHERE
-        todo LIKE '%${search_q}%'
-        AND priority = '${priority}'`
+        priority = '${priority}'
+        AND todo LIKE '%${search_q}%'`
       break
     case hasStatusProperty(request.query):
+      console.log('hasStatus')
       getTodoQuery = `
       SELECT 
         * 
       FROM 
-        todo LIKE '%${search_q}%'
-        AND status = '${status}'`
+        todo
+      WHERE
+        status = '${status}'
+        AND todo LIKE '%${search_q}%'`
       break
     default:
+      console.log('default')
       getTodoQuery = `
       SELECT 
         * 
@@ -145,7 +151,7 @@ app.put('/todos/:todoId/', async (request, response) => {
       todo 
     WHERE 
       id = ${todoId}`
-  const previousTodo = await db.run(previousTodoQuery)
+  const previousTodo = await db.get(previousTodoQuery)
   const {
     todo = previousTodo.todo,
     priority = previousTodo.priority,
@@ -160,9 +166,9 @@ app.put('/todos/:todoId/', async (request, response) => {
       priority = '${priority}',
       status = '${status}'
     WHERE 
-      id = ${todo}`
+      id = ${todoId}`
   await db.run(updateTodoQuery)
-  response.send('${updateColumn} Updated')
+  response.send(`${updateColumn} Updated`)
 })
 
 //API 5
